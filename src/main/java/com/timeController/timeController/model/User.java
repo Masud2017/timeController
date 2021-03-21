@@ -21,7 +21,6 @@ public class User {
     @Column(name = "password")
     String password;
 
-
     public long getId() {
         return this.id;
     }
