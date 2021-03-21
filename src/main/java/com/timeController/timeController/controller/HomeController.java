@@ -41,5 +41,6 @@ public class HomeController {
 		logger.debug("Email :"+userPojo.getEmail());
 
 		regUser.register(userPojo);
+		// Th
 	}
 }
