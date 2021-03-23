@@ -1,6 +1,7 @@
 package com.timeController.timeController.config;
 
 import com.timeController.timeController.model.User;
+import com.timeController.timeController.util.JWTAuthenticationEntryPoint;
 import com.timeController.timeController.util.JWTRequestFilter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class Conf extends WebSecurityConfigurerAdapter{
 
     @Autowired
     JWTRequestFilter jwtRequestFilter;
+    @Autowired
+    JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
    
 
     @Autowired
@@ -45,6 +48,7 @@ public class Conf extends WebSecurityConfigurerAdapter{
 				.authorizeRequests().antMatchers("/api/v1/authenticate","/api/v1/registration").permitAll().
 				// all other requests need to be authenticated
 				anyRequest().authenticated().and()
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
                 http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
