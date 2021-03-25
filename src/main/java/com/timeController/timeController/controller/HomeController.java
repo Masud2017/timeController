@@ -1,13 +1,16 @@
 package com.timeController.timeController.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.timeController.timeController.dao.ImageRepository;
 import com.timeController.timeController.dao.UserRepository;
 import com.timeController.timeController.model.AuthRequest;
 import com.timeController.timeController.model.AuthResponse;
 import com.timeController.timeController.model.User;
+import com.timeController.timeController.model.profileImageModel;
 import com.timeController.timeController.service.UserRegisterService;
 import com.timeController.timeController.util.JWTUtil;
 import com.timeController.timeController.util.UserModelAssembler;
@@ -25,6 +28,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +36,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping(value = "/api/v1")
@@ -51,6 +57,8 @@ public class HomeController {
 	JWTUtil jwtTokenUtil;
 	@Autowired
 	UserModelAssembler userAssembler;
+	@Autowired
+	ImageRepository imageRepo;
 
 	@GetMapping(value = "")
 	public String home() {
@@ -107,5 +115,20 @@ public class HomeController {
 		Optional<User> user = (Optional<User>) userRepo.findById(Long.parseLong(id));
 		return userAssembler.toModel(user.get());
 		//return user;
+	}
+
+	@PostMapping(value = "/profile-image")
+	public void addImage(@RequestParam MultipartFile profileImage) throws IOException {
+		profileImageModel image = new profileImageModel();
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User user = userRepo.findByEmail(userDetails.getUsername());
+
+		image.setImage(profileImage.getBytes());
+		image.setUser(user);
+
+		imageRepo.save(image);
+		byte[] cont = image.getImage().getContent();
+
+		return new ByteArrayResource(cont);
 	}
 }

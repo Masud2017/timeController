@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import java.util.Objects;
@@ -63,7 +64,6 @@ public class User {
         this.password = password;
     }
 
- 
 
     @Override
     public boolean equals(Object o) {
@@ -91,7 +91,5 @@ public class User {
             ", password='" + getPassword() + "'" +
             "}";
     }
-
-
     
 }
