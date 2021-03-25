@@ -13,10 +13,9 @@ public class TodoModelAssembler implements RepresentationModelAssembler<TodoMode
 
     @Override
     public EntityModel<TodoModel> toModel(TodoModel todo) {
-        EntityModel.of(linkTo(modelOn(TodoController.class).getTodoListById(Long.toString(todo.getId()))).withSelfRel(),
-        linkTo(methodOn(TodoController.class).getTodoList().withRel("todoList"));
-        );
-        return null;
+        return EntityModel.of(todo,
+        linkTo(methodOn(TodoController.class).getTodoById(Long.toString(todo.getId()))).withSelfRel(),
+        linkTo(methodOn(TodoController.class).getTodoList()).withRel("todoList"));
     }
 
 
