@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,6 +58,19 @@ public class TodoController {
         
         todoRepo.save(todo);
         return todo;
+    }
+
+    @PutMapping(value="/todo0/{id}")
+    public void updateTodo(@RequestBody TodoModel todo,@PathVariable String id) {
+        Optional<TodoModel> todoOptional = todoRepo.findById(Long.parseLong(id));
+        TodoModel todoModel = todoOptional.get();
+
+        todoModel.setNameFile(todo.getNameFile());
+        todoModel.setDescription(todo.getDescription());
+        todoModel.setDate(todo.getDate());
+        todoModel.setDone(todo.getDone());
+        
+        todoRepo.save(todoModel);
     }
     
 }
