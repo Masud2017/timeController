@@ -6,6 +6,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -71,6 +72,14 @@ public class TodoController {
         todoModel.setDone(todo.getDone());
         
         todoRepo.save(todoModel);
+    }
+
+    @DeleteMapping(value = "/todo0/{id}")
+    public void deleteTodo(@PathVariable String id) {
+        Optional<TodoModel> todoOptional = todoRepo.findById(Long.parseLong((id)));
+        TodoModel todo = todoOptional.get();
+
+        todoRepo.delete(todo);
     }
     
 }
