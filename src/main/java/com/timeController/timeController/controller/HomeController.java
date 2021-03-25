@@ -2,6 +2,7 @@ package com.timeController.timeController.controller;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.timeController.timeController.dao.UserRepository;
 import com.timeController.timeController.model.AuthRequest;
@@ -9,11 +10,15 @@ import com.timeController.timeController.model.AuthResponse;
 import com.timeController.timeController.model.User;
 import com.timeController.timeController.service.UserRegisterService;
 import com.timeController.timeController.util.JWTUtil;
+import com.timeController.timeController.util.UserModelAssembler;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 //import org.hibernate.annotations.common.util.impl.LoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,6 +49,8 @@ public class HomeController {
 	UserDetailsService userDetailsService;
 	@Autowired
 	JWTUtil jwtTokenUtil;
+	@Autowired
+	UserModelAssembler userAssembler;
 
 	@GetMapping(value = "")
 	public String home() {
@@ -74,9 +81,10 @@ public class HomeController {
 	}
 	
 	@GetMapping(value = "/user")
-	public List<User> getUserList() {
-		List<User> userList = userRepo.findAll();
-		return userList;
+	public CollectionModel<EntityModel<User>> getUserList() {
+		List<EntityModel<User>> userList = userRepo.findAll().stream().map(userAssembler::toModel).collect(Collectors.toList());
+
+		return CollectionModel.of(userList,linkTo(methodOn(HomeController.class).getUserList()).withSelfRel());
 	}
 
 	@PostMapping(value = "/registration",consumes={MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE},produces={MediaType.APPLICATION_JSON_VALUE,MediaType.APPLICATION_XML_VALUE})
@@ -95,8 +103,9 @@ public class HomeController {
 	}
 
 	@GetMapping(value = "/user/{id}")
-	public Optional<User> getUserById(@PathVariable String id) {
+	public EntityModel<User> getUserById(@PathVariable String id) {
 		Optional<User> user = (Optional<User>) userRepo.findById(Long.parseLong(id));
-		return user;
+		return userAssembler.toModel(user.get());
+		//return user;
 	}
 }
