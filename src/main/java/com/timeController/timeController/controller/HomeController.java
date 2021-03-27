@@ -117,18 +117,18 @@ public class HomeController {
 		//return user;
 	}
 
-	@PostMapping(value = "/profile-image")
-	public void addImage(@RequestParam MultipartFile profileImage) throws IOException {
-		profileImageModel image = new profileImageModel();
-		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		User user = userRepo.findByEmail(userDetails.getUsername());
+	// @PostMapping(value = "/profile-image")
+	// public void addImage(@RequestParam MultipartFile profileImage) throws IOException {
+	// 	profileImageModel image = new profileImageModel();
+	// 	UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	// 	User user = userRepo.findByEmail(userDetails.getUsername());
 
-		image.setImage(profileImage.getBytes());
-		image.setUser(user);
+	// 	image.setImage(profileImage.getBytes());
+	// 	image.setUser(user);
 
-		imageRepo.save(image);
-		byte[] cont = image.getImage().getContent();
+	// 	imageRepo.save(image);
+	// 	byte[] cont = image.getImage().getContent();
 
-		return new ByteArrayResource(cont);
-	}
+	// 	return new ByteArrayResource(cont);
+	// }
 }

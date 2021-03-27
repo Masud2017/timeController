@@ -3,8 +3,6 @@ package com.timeController.timeController.model;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -17,8 +15,9 @@ public class profileImageModel {
     @GeneratedValue
     private long id;
 
-    @Lob
-    private byte[] image;
+    // @Lob
+    // private byte[] image;
+    private String imageName;
     @OneToOne
     private User user;
 
@@ -31,12 +30,12 @@ public class profileImageModel {
         this.id = id;
     }
 
-    public byte[] getImage() {
-        return this.image;
+    public String getImageName() {
+        return this.imageName;
     }
 
-    public void setImage(byte[] image) {
-        this.image = image;
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
     }
 
     public User getUser() {
@@ -48,6 +47,7 @@ public class profileImageModel {
     }
 
 
+
     @Override
     public boolean equals(Object o) {
         if (o == this)
@@ -56,19 +56,20 @@ public class profileImageModel {
             return false;
         }
         profileImageModel profileImageModel = (profileImageModel) o;
-        return id == profileImageModel.id && Objects.equals(image, profileImageModel.image) && Objects.equals(user, profileImageModel.user);
+        return id == profileImageModel.id && Objects.equals(imageName, profileImageModel.imageName) && Objects.equals(user, profileImageModel.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, image, user);
+        return Objects.hash(id, imageName, user);
     }
+    
 
     @Override
     public String toString() {
         return "{" +
             " id='" + getId() + "'" +
-            ", image='" + getImage() + "'" +
+            ", imageName='" + getImageName() + "'" +
             ", user='" + getUser() + "'" +
             "}";
     }

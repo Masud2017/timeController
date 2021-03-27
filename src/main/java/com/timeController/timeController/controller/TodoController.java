@@ -2,8 +2,11 @@ package com.timeController.timeController.controller;
 
 import org.hibernate.engine.spi.CollectionEntry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +18,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -24,6 +29,8 @@ import com.timeController.timeController.dao.TodoModelRepository;
 import com.timeController.timeController.dao.UserRepository;
 import com.timeController.timeController.model.TodoModel;
 import com.timeController.timeController.model.User;
+import com.timeController.timeController.service.ProfileImageService;
+import com.timeController.timeController.service.ProfileImageServiceImpl;
 import com.timeController.timeController.util.TodoModelAssembler;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
@@ -37,6 +44,8 @@ public class TodoController {
     TodoModelAssembler todoAssembler;
     @Autowired
     UserRepository userRepo;
+    @Autowired
+    ProfileImageServiceImpl profileImageService;
     
     @GetMapping(value = "/todo0")
     public CollectionModel<EntityModel<TodoModel>> getTodoList() {
@@ -80,6 +89,17 @@ public class TodoController {
         TodoModel todo = todoOptional.get();
 
         todoRepo.delete(todo);
+    }
+    @PostMapping(value ="/todo0/profile-image")
+    public ResponseEntity<?> addProfileImage(@RequestBody MultipartFile image) throws IOException {
+        byte[] binaryImage = image.getBytes();
+        ByteArrayResource content = new ByteArrayResource(binaryImage);
+
+        profileImageService.setImageName(content.getFilename());
+        profileImageService.setImageContent(content);
+        profileImageService.writeImageToDisk();
+
+        return new ResponseEntity<String>("Profile image saved",HttpStatus.CREATED);
     }
     
 }
