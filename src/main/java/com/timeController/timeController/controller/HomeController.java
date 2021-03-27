@@ -51,11 +51,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(value = "/api/v1")
 public class HomeController {
 	Logger logger = LoggerFactory.getLogger(HomeController.class);
+
 	@Autowired
 	UserRepository userRepo;
 	@Autowired
 	UserRegisterService regUser;
-
 	@Autowired
 	AuthenticationManager authenticationManager;
 	@Autowired
@@ -131,7 +131,6 @@ public class HomeController {
 	@PostMapping(value ="/profile-image")
     public ResponseEntity<?> addProfileImage(@RequestParam("profileImage") MultipartFile image) throws IOException {
         System.out.println("Printing from the todo app : "+image.getOriginalFilename());
-        
 
         profileImageService.setImageName(image.getOriginalFilename());
         profileImageService.setImageContent(image);
@@ -145,17 +144,16 @@ public class HomeController {
 		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		User user = userRepo.findByEmail(userDetails.getUsername());
 
-		 profileImageModel imgModel = imgRepo.findByUser(user);
-		 File fp = new File(imgModel.getImageName());
+		profileImageModel imgModel = imgRepo.findByUser(user);
+		File fp = new File(imgModel.getImageName());
 
-		 FileInputStream in = new FileInputStream(fp);
-		 byte[] imgBinary = in.readAllBytes();
+		FileInputStream in = new FileInputStream(fp);
+		byte[] imgBinary = in.readAllBytes();
 
-		 ByteArrayResource imageInputStream = new ByteArrayResource(imgBinary);
+		ByteArrayResource imageInputStream = new ByteArrayResource(imgBinary);
 
 		System.out.println("the name of the file is : "+imgModel.getImageName());
 
 		return ResponseEntity.status(HttpStatus.OK).contentLength(imageInputStream.contentLength()).body(imageInputStream);
-		//return null;
 	}
 }

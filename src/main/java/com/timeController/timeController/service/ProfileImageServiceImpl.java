@@ -22,18 +22,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProfileImageServiceImpl implements ProfileImageService{
+    private String imageName;
+    @Value("${profileImage.path}")
+    String path;
     @Autowired
     ImageRepository imgRepo;
-    @Autowired
-    UserRepository userRepo;
-
-    private String imageName;
-
-
     @Value("${profileImageSize.Limit}")
     private String profileImageSizeLimit;
-
+    @Autowired
+    UserRepository userRepo;
     private MultipartFile content;
+
 
     @Override
     public void setImageName(String imageName) {
@@ -51,21 +50,20 @@ public class ProfileImageServiceImpl implements ProfileImageService{
     
     @Override
     public void writeImageToDisk() throws IOException {
-        String path = "/home/unroot/imageStorageDb/";
-        
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepo.findByEmail(userDetails.getUsername());
         profileImageModel imgModelChecker = imgRepo.findByUser(user);
 
         if (imgModelChecker == null) {
+            final byte[] imageContent;
         
             File fp = new File(path+this.content.getOriginalFilename());
-
             profileImageModel imgModel = new profileImageModel();
+            InputStream in;
+
             imgModel.setImageName(path + this.content.getOriginalFilename());
             imgModel.setUser(user);
-            final byte[] imageContent;
-            InputStream in;
+
             try {
                 in = content.getInputStream();
                 BufferedInputStream input = new BufferedInputStream(in);
