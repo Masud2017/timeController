@@ -15,10 +15,10 @@ import com.timeController.timeController.model.profileImageModel;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ProfileImageServiceImpl implements ProfileImageService{
@@ -33,7 +33,7 @@ public class ProfileImageServiceImpl implements ProfileImageService{
     @Value("${profileImageSize.Limit}")
     private String profileImageSizeLimit;
 
-    private ByteArrayResource content;
+    private MultipartFile content;
 
     @Override
     public void setImageName(String imageName) {
@@ -45,49 +45,53 @@ public class ProfileImageServiceImpl implements ProfileImageService{
     }
 
     @Override
-    public void setImageContent(ByteArrayResource content) {
+    public void setImageContent(MultipartFile content) {
         this.content = content;
     }
     
     @Override
-    public void writeImageToDisk() {
-        String path = "/home/unroot/imageSorageDb";
-
-       // System.out.println(profileImageSizeLimit);
-
+    public void writeImageToDisk() throws IOException {
+        String path = "/home/unroot/imageStorageDb/";
+        
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userRepo.findByEmail(userDetails.getUsername());
+        profileImageModel imgModelChecker = imgRepo.findByUser(user);
+
+        if (imgModelChecker == null) {
         
-        File fp = new File(path+this.content.getFilename());
+            File fp = new File(path+this.content.getOriginalFilename());
 
-        profileImageModel imgModel = new profileImageModel();
-        imgModel.setImageName(this.content.getFilename());
-        imgModel.setUser(user);
-        final byte[] imageContent;
-        InputStream in;
-        try {
-            in = content.getInputStream();
-            BufferedInputStream input = new BufferedInputStream(in);
-
-            imageContent = input.readAllBytes();
-
-            
+            profileImageModel imgModel = new profileImageModel();
+            imgModel.setImageName(path + this.content.getOriginalFilename());
+            imgModel.setUser(user);
+            final byte[] imageContent;
+            InputStream in;
             try {
-                FileOutputStream out = new FileOutputStream(fp);
-                BufferedOutputStream output = new BufferedOutputStream(out);
-                output.write(imageContent);
-                output.close();
+                in = content.getInputStream();
+                BufferedInputStream input = new BufferedInputStream(in);
+
+                imageContent = input.readAllBytes();
+                
                 try {
-                    out.write(imageContent);
-                } catch (IOException e) {
+                    FileOutputStream out = new FileOutputStream(fp);
+                    BufferedOutputStream output = new BufferedOutputStream(out);
+                    output.write(imageContent);
+                    imgRepo.save(imgModel);
+                    try {
+                        out.write(imageContent);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
 
-        } catch (IOException e1) {
-            e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            
+        } else {
+            System.out.println("Sorry your profile image is already exist!!");
         }
     }
     

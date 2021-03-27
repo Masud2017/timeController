@@ -1,5 +1,8 @@
 package com.timeController.timeController.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +14,7 @@ import com.timeController.timeController.model.AuthRequest;
 import com.timeController.timeController.model.AuthResponse;
 import com.timeController.timeController.model.User;
 import com.timeController.timeController.model.profileImageModel;
+import com.timeController.timeController.service.ProfileImageService;
 import com.timeController.timeController.service.UserRegisterService;
 import com.timeController.timeController.util.JWTUtil;
 import com.timeController.timeController.util.UserModelAssembler;
@@ -20,8 +24,11 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -59,6 +66,10 @@ public class HomeController {
 	UserModelAssembler userAssembler;
 	@Autowired
 	ImageRepository imageRepo;
+	@Autowired
+	ProfileImageService profileImageService;
+	@Autowired
+	ImageRepository imgRepo;
 
 	@GetMapping(value = "")
 	public String home() {
@@ -117,18 +128,34 @@ public class HomeController {
 		//return user;
 	}
 
-	// @PostMapping(value = "/profile-image")
-	// public void addImage(@RequestParam MultipartFile profileImage) throws IOException {
-	// 	profileImageModel image = new profileImageModel();
-	// 	UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-	// 	User user = userRepo.findByEmail(userDetails.getUsername());
+	@PostMapping(value ="/profile-image")
+    public ResponseEntity<?> addProfileImage(@RequestParam("profileImage") MultipartFile image) throws IOException {
+        System.out.println("Printing from the todo app : "+image.getOriginalFilename());
+        
 
-	// 	image.setImage(profileImage.getBytes());
-	// 	image.setUser(user);
+        profileImageService.setImageName(image.getOriginalFilename());
+        profileImageService.setImageContent(image);
+        profileImageService.writeImageToDisk();
 
-	// 	imageRepo.save(image);
-	// 	byte[] cont = image.getImage().getContent();
+        return new ResponseEntity<String>("Profile image saved",HttpStatus.CREATED);
+    }
 
-	// 	return new ByteArrayResource(cont);
-	// }
+	@GetMapping(value = "/profile-image",produces=MediaType.IMAGE_GIF_VALUE)
+	public ResponseEntity<Resource> getTheProfileImage() throws IOException {
+		UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		User user = userRepo.findByEmail(userDetails.getUsername());
+
+		 profileImageModel imgModel = imgRepo.findByUser(user);
+		 File fp = new File(imgModel.getImageName());
+
+		 FileInputStream in = new FileInputStream(fp);
+		 byte[] imgBinary = in.readAllBytes();
+
+		 ByteArrayResource imageInputStream = new ByteArrayResource(imgBinary);
+
+		System.out.println("the name of the file is : "+imgModel.getImageName());
+
+		return ResponseEntity.status(HttpStatus.OK).contentLength(imageInputStream.contentLength()).body(imageInputStream);
+		//return null;
+	}
 }

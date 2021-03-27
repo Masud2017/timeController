@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -90,16 +91,7 @@ public class TodoController {
 
         todoRepo.delete(todo);
     }
-    @PostMapping(value ="/todo0/profile-image")
-    public ResponseEntity<?> addProfileImage(@RequestBody MultipartFile image) throws IOException {
-        byte[] binaryImage = image.getBytes();
-        ByteArrayResource content = new ByteArrayResource(binaryImage);
+    
 
-        profileImageService.setImageName(content.getFilename());
-        profileImageService.setImageContent(content);
-        profileImageService.writeImageToDisk();
-
-        return new ResponseEntity<String>("Profile image saved",HttpStatus.CREATED);
-    }
     
 }
