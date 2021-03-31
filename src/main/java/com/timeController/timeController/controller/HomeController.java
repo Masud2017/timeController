@@ -125,7 +125,6 @@ public class HomeController {
 	public EntityModel<User> getUserById(@PathVariable String id) {
 		Optional<User> user = (Optional<User>) userRepo.findById(Long.parseLong(id));
 		return userAssembler.toModel(user.get());
-		//return user;
 	}
 
 	@PostMapping(value ="/profile-image")
