@@ -32,6 +32,7 @@ public class User {
         this.id = id;
     }
 
+
     public String getFirst_name() {
         return this.first_name;
     }
@@ -47,7 +48,7 @@ public class User {
     public void setSecond_name(String second_name) {
         this.second_name = second_name;
     }
-
+    
     public String getEmail() {
         return this.email;
     }
