@@ -142,6 +142,7 @@ public class HomeController {
 	}
 
 	@PostMapping(value ="/profile-image")
+	@CrossOrigin(origins= "http://localhost:4444/api/v1/profile-image")
     public ResponseEntity<?> addProfileImage(@RequestParam("profileImage") MultipartFile image) throws IOException {
         System.out.println("Printing from the todo app : "+image.getOriginalFilename());
 

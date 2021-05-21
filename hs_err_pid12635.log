@@ -1,0 +1,21 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f237cfebea5, pid=12635, tid=12645
+#
+# JRE version: OpenJDK Runtime Environment (11.0.7+9) (build 11.0.7-ea+9-post-Debian-1)
+# Java VM: OpenJDK 64-Bit Server VM (11.0.7-ea+9-post-Debian-1, mixed mode, sharing, tiered, compressed oops, g1 gc, linux-amd64)
+# Problematic frame:
+# C  [libjimage.so+0x2ea5]
+#
+# No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugs.debian.org/openjdk-11
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=localhost:40605 -Dfile.encoding=UTF-8 com.timeController.timeController.TimeControllerApplication
+
+Host: Intel(R) Pentium(R) CPU G4400 @ 3.30GHz, 

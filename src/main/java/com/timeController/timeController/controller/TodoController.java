@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -37,6 +38,7 @@ import com.timeController.timeController.util.TodoModelAssembler;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
+@CrossOrigin(origins="http://localhost:3000")
 @RequestMapping(value = "/api/v1/todo")
 public class TodoController {
     @Autowired
@@ -61,6 +63,7 @@ public class TodoController {
         return todoAssembler.toModel(todo.get());
     }
 
+    @CrossOrigin(origins="http://localhost:3000")
     @PostMapping(value = "/todo0")
     public TodoModel addTodo(@RequestBody TodoModel todo) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -91,4 +94,6 @@ public class TodoController {
 
         todoRepo.delete(todo);
     }
+
+    public String hello() {return "Hello world";}
 }

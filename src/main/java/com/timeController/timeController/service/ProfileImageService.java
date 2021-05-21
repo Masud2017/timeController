@@ -2,6 +2,8 @@ package com.timeController.timeController.service;
 
 import java.io.IOException;
 
+import com.timeController.timeController.model.User;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public interface ProfileImageService {

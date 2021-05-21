@@ -47,7 +47,7 @@ public class ProfileImageServiceImpl implements ProfileImageService{
     public void setImageContent(MultipartFile content) {
         this.content = content;
     }
-    
+
     @Override
     public void writeImageToDisk() throws IOException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -90,7 +90,57 @@ public class ProfileImageServiceImpl implements ProfileImageService{
             
         } else {
             System.out.println("Sorry your profile image is already exist!!");
+            /**
+             * TODO: Delete the existing image and replace a new one
+             */
+            File filePointer = new File(imgModelChecker.getImageName());
+            try {
+                filePointer.delete();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            try{
+             imgRepo.delete(imgModelChecker);
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+
+            /**
+             * Now I have to insert the new image
+             */
+
+            final byte[] imageContent;
+        
+            File fp = new File(path+this.content.getOriginalFilename());
+            profileImageModel imgModel = new profileImageModel();
+            InputStream in;
+
+            imgModel.setImageName(path + this.content.getOriginalFilename());
+            imgModel.setUser(user);
+
+            try {
+                in = content.getInputStream();
+                BufferedInputStream input = new BufferedInputStream(in);
+
+                imageContent = input.readAllBytes();
+                
+                try {
+                    FileOutputStream out = new FileOutputStream(fp);
+                    BufferedOutputStream output = new BufferedOutputStream(out);
+                    output.write(imageContent);
+                    imgRepo.save(imgModel);
+                    try {
+                        out.write(imageContent);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
-    
 }

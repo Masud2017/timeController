@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -21,7 +23,9 @@ public class TodoModel {
     private String description;
     @ManyToOne
     private User user;
+    @Temporal(TemporalType.TIMESTAMP)
     private Date date;
+    private int duration;
     private boolean done;
 
     public TodoModel() {
