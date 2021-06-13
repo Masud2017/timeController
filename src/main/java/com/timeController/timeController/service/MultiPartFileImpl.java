@@ -9,6 +9,10 @@ import java.io.InputStream;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * 
+ */
+
 public class MultiPartFileImpl implements MultipartFile{
     private ByteArrayResource byteArrayResource;
 
@@ -69,6 +73,8 @@ public class MultiPartFileImpl implements MultipartFile{
         BufferedOutputStream bfOut = new BufferedOutputStream(outputStream);
 
         bfOut.write(this.byteArrayResource.getByteArray());
+
+        bfOut.close();
     }
     
 }

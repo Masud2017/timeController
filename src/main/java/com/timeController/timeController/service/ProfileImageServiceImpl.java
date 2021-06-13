@@ -89,7 +89,7 @@ public class ProfileImageServiceImpl implements ProfileImageService{
             }
             
         } else {
-            System.out.println("Sorry your profile image is already exist!!");
+            System.out.println("Sorry your profile image is already exist but trying to rewrite the image!!");
             /**
              * TODO: Delete the existing image and replace a new one
              */

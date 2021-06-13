@@ -88,11 +88,17 @@ public class TodoController {
     }
 
     @DeleteMapping(value = "/todo0/{id}")
-    public void deleteTodo(@PathVariable String id) {
+    public ResponseEntity<String> deleteTodo(@PathVariable String id) {
         Optional<TodoModel> todoOptional = todoRepo.findById(Long.parseLong((id)));
         TodoModel todo = todoOptional.get();
 
         todoRepo.delete(todo);
+        
+        if (todo == null) {
+            return new ResponseEntity<String>("Cannot delete",HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<String>("Deleted",HttpStatus.OK);
     }
 
     public String hello() {return "Hello world";}
