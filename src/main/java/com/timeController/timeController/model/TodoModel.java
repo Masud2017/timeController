@@ -92,7 +92,14 @@ public class TodoModel {
     public void setUser(User user) {
         this.user = user;
     }
-   
+
+
+    public int getDuration() {
+        return this.duration;
+    }
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
 
     @Override
     public boolean equals(Object o) {
