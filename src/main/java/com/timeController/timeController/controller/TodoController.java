@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -52,7 +54,13 @@ public class TodoController {
     
     @GetMapping(value = "/todo0")
     public CollectionModel<EntityModel<TodoModel>> getTodoList() {
-        List<EntityModel<TodoModel>> todoList = todoRepo.findAll().stream().map(todoAssembler::toModel).collect(Collectors.toList());
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepo.findByEmail(userDetails.getUsername()); // this is my user
+
+        List<EntityModel<TodoModel>> todoList = todoRepo.findByUserId(user.getId()).stream().map(todoAssembler::toModel).collect(Collectors.toList());
+
+        Collections.reverse(todoList); // reversing the list so the the most recent entry come at first.
+        // List<EntityModel<TodoModel>> todoList = todoRepo.findAll().stream().map(todoAssembler::toModel).collect(Collectors.toList());
         return CollectionModel.of(todoList,linkTo(methodOn(TodoController.class).getTodoList()).withSelfRel());
     }
 
